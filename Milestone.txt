@@ -1,5 +1,5 @@
 Project ideation and decided 11/1/21
-Analysis of the power of Dividend Reinvestment. In this project we will select one stock that pays dividends one crypto currency that is traded regularly.
+Analysis of the power of Dividend Reinvestment. In this project we will select one stock that pays dividends and one crypto currency that is traded regularly.
 
 MSFT and Bitcoin will be used in this program. 
 
