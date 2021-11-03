@@ -1,0 +1,44 @@
+Project ideation and decided 11/1/21
+Analysis of the power of Dividend Reinvestment. In this project we will select one stock that pays dividends and one crypto currency that is traded regularly.
+
+MSFT and Bitcoin will be used in this program. 
+
+Code to 
+
+Gather historical data over 5 year period of time using MSFT and Bitcoin: use same code from challenge 5
+#You can't change the past
+
+Dividend not reinvested: 
+
+Dividend reinvested in Msft over 10, 20 and 30 Year period
+        
+        
+Dividend reinvested in Bitcoin over 10, 20 and 30 Year period
+Dividend not reinvested
+
+CODE:
+       Dividend not reinvested
+       
+
+Data fetching/API integration
+Alpaca
+Created CSV file called msft_dividend to import
+btc_url = "https://api.alternative.me/v2/ticker/Bitcoin/?convert=USD"
+
+
+Resources
+Challenge 5 for Alpaca and Montecarlo simulations
+
+
+Analysis
+
+
+Testing: Final test on November 9, 2021
+
+Creating documentation by November 9, 2021
+    include README file and presentation for class
+
+
+Initial iteration of Project1 will be completed by eod November 7, 2021 
+
+Creating presentation Because this is a two-week project, you’ll want to make sure that you have a set portion of the site finished by the end of the first week to stay on track. Though you will divide the work among your group members, it’s essential to collaborate and communicate while working on different parts of the application. Don’t silo yourself, hoping that everything will work together. Instead, check in regularly and offer support. Make sure you are in sync and help each other when a blocker arises.
