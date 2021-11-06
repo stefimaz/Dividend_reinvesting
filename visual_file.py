@@ -31,22 +31,18 @@ dropdown_stocks = st.selectbox('Pick your stock', tickers)
 start = st.date_input('Start Date', value= pd.to_datetime('2011-01-01'))
 end = st.date_input('End Date', value= pd.to_datetime('today'))
 
-#@st.cache
-def close_price():
-    data = yf.download(dropdown_stocks)['Adj Close']
-    start_Date = pd.to_datetime('today')
-    end_Date = pd.to_datetime('today')
-    timeframe = (start_date, end_date)
-    price = (data, timeframe)
-    
-    return price
+@st.cache
+def close_price(dropdown_stocks):
+    data = yf.download(dropdown_stocks, period = "today", interval= "1d")['Adj Close'][0]
+    price = data    
+    return round(data,2)
 
     
 if len(dropdown_stocks) > 0:
-    df2 = yf.download(dropdown_stocks, start, end)['Adj Close']
+    df = yf.download(dropdown_stocks, start, end)['Adj Close']
     st.header('Historical value of {}'.format(dropdown_stocks))
-    st.text('The current value is ${}'.format(close_price))
-    st.line_chart(df2)
+    st.text('The current value is ${}'.format(close_price(dropdown_stocks)))
+    st.line_chart(df)
 
 #def relativeret(df):
 #    rel = df.pct_change()
@@ -66,15 +62,18 @@ share_amount= st.number_input('How many shares do you want?', min_value=1)
 #def total_price()
  
 dropdown_option = st.selectbox('Where do you want to reinvest your dividends?', options)
+
+
+####### I believe all code should be inserted here using the if, elif , else method
+
+
+
 #@st.cache
 #if options == Same Stock
 #    def stock(tickers):
 
 dropdown_crypto = st.selectbox('What crypto would you like to reinvest in?', crypto)
 
-
-
-####### I believe all code should be inserted here using the if, elif , else method
         
         
 dropdown_stocks_dividend = st.selectbox('Pick your stock dividend', tickers) 
