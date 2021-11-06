@@ -44,22 +44,15 @@ if len(dropdown_stocks) > 0:
     st.text('The current value is ${}'.format(close_price(dropdown_stocks)))
     st.line_chart(df)
 
-#def relativeret(df):
-#    rel = df.pct_change()
-#    cumret = (1 + rel).cumprod() - 1
-#    cumret = cumret.fillna(0)
-#    return cumret
-#if len(dropdown_stocks) > 0:
-#    df = relativeret(yf.download(dropdown_stocks, start, end)['Adj Close'])
-#    st.header('Cumulative returns of {}'.format(dropdown_stocks))
-#    st.line_chart(df)
-#if len(dropdown_stocks) > 0:
-#    df3 = yf.download(dropdown_stocks, start, end)['dividendYield']['dividendRate']
-#    st.bar_chart(df3)
-    
-#share_amount= st.slider('How many shares do you want?', min_value=10, max_value=500, value=20, step=5)
+
 share_amount= st.number_input('How many shares do you want?', min_value=1)   
-#def total_price()
+st.header('You selected {} shares.'.format(share_amount))
+
+def amount(share_amount):
+    value = close_price(dropdown_stocks) * share_amount
+    price = value
+    return round(value,2)
+st.text('Your total buyin will be {}'.format(amount(share_amount)))
  
 dropdown_option = st.selectbox('Where do you want to reinvest your dividends?', options)
 
@@ -139,4 +132,17 @@ dropdown_div = st.multiselect('This stock will return', tickers)
         
 #simulation_df.head()
     
+    #def relativeret(df):
+#    rel = df.pct_change()
+#    cumret = (1 + rel).cumprod() - 1
+#    cumret = cumret.fillna(0)
+#    return cumret
+#if len(dropdown_stocks) > 0:
+#    df = relativeret(yf.download(dropdown_stocks, start, end)['Adj Close'])
+#    st.header('Cumulative returns of {}'.format(dropdown_stocks))
+#    st.line_chart(df)
+#if len(dropdown_stocks) > 0:
+#    df3 = yf.download(dropdown_stocks, start, end)['dividendYield']['dividendRate']
+#    st.bar_chart(df3)
     
+#share_amount= st.slider('How many shares do you want?', min_value=10, max_value=500, value=20, step=5)
