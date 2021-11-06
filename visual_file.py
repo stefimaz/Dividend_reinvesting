@@ -76,14 +76,33 @@ if dropdown_option == "Same Stock":
     
 elif dropdown_option == "Crypto":
     dropdown_crypto = st.selectbox('What crypto would you like to reinvest in?', crypto)
+    
+    if len(dropdown_crypto) > 0:
+        df = yf.download(dropdown_crypto, start, end)['Adj Close']
+        st.header('Historical value of {}'.format(dropdown_crypto))
+        st.line_chart(df)
     st.slider('How many years of investment projections?', min_value= 10, max_value= 30, value=10, step= 10)
+    
     
     # simulation of chosen crypto using invested dividends
      
 elif dropdown_option == "Keep the cash":
-    dropdown_div = st.multiselect('This stock will return', tickers)
     st.slider('How many years of pocketing the cash?', min_value= 10, max_value= 30, value=10, step= 10)
+    st.header('This stock will return', tickers)
     
+    
+    
+    def sip(investment, tenure, interest, amount=0, is_year=True, is_percent=True, show_amount_list=False):
+        tenure = tenure*12 if is_year else tenure
+        interest = interest/100 if is_percent else interest
+        interest /= 12
+        amount_every_month = {}
+        for month in range(tenure):
+            amount = (amount + investment)*(1+interest)
+            amount_every_month[month+1] = amount
+        return {'Amount after invexting your dividends back into the chosen stock': amount, 'Amount every month': amount_every_month} 
+    SIP_maturity = sip(5, 10, 5)
+    st.header('Your total return will be {}'.format(sip(investment, tenure, interest)))
     # simulation of dividend investment over time
     
 
