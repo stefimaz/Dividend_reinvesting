@@ -44,7 +44,6 @@ if len(dropdown_stocks) > 0:
     st.text('The current value is ${}'.format(close_price(dropdown_stocks)))
     st.line_chart(df)
 
-
 share_amount= st.number_input('How many shares do you want?', min_value=1)   
 st.header('You selected {} shares.'.format(share_amount))
 
@@ -55,94 +54,36 @@ def amount(share_amount):
 st.text('Your total buyin will be {}'.format(amount(share_amount)))
  
 dropdown_option = st.selectbox('Where do you want to reinvest your dividends?', options)
+# Create and empty DataFrame for closing prices of chosen stock
+df_stock_prices = pd.DataFrame()
 
+# Fetch the closing prices for all the stocks
+df_stock_prices[dropdown_option] = close_price(dropdown_stocks)
 
-####### I believe all code should be inserted here using the if, elif , else method
-
-
-
-#@st.cache
-#if options == Same Stock
-#    def stock(tickers):
-
-dropdown_crypto = st.selectbox('What crypto would you like to reinvest in?', crypto)
-
-        
-        
-dropdown_stocks_dividend = st.selectbox('Pick your stock dividend', tickers) 
-
-#@st.cache
-#def dividend(df2):
-#    rel = df2.pct_change()
-#    cumret = (1 + rel).cumprod() - 1
-#    cumret = cumret.fillna(0)
-#    return cumret
-#if len(dropdown_stocks) > 0:
-#    df2 = yf.download(dropdown_stocks, start, end)['dividendRate']
-#    df2 = dividend(yf.download(dropdown_stocks, start, end)['dividendYield'])
-#    st.header('Returns of {}'.format(dropdown_stocks))
-#    st.bar_chart(df2)
-
-#def sip(investment, tenure, interest, amount=0, is_year=True, is_percent=True, show_amount_list=False):
-#    tenure = tenure*12 if is_year else tenure
-#    interest = interest/100 if is_percent else interest
-#    interest /= 12
-#    amount_every_month = {}
-#    for month in range(tenure):
-#        amount = (amount + investment)*(1+interest)
-#        amount_every_month[month+1] = amount
-#    return {'Amount after invexting your dividends back into the chosen stock': amount, 'Amount every month': amount_every_month} #if show_amount_list else {'Amount after investing your dividends back into the chosen stock': amount} 
-#years = input()
-# (monthly amount, years, percent returned)
-
-#SIP_maturity = sip(monthly_f_div, 20, average_annual_return["F"])
-
-#print(SIP_maturity)
-
-
-
-
-dropdown_div = st.multiselect('This stock will return', tickers)
-
-
-
-
-
-
-#returns = last_price.pct_change().dropna()
-# number of simulations
-#number_simulations = 1000
-#number_days = 1400
-
-#simulation_df = pd.DataFrame()    
-#for x in range(number_simulations):
-#    count = 0
-#    daily_volatility= returns.std()
+if dropdown_option == "Same Stock":
+    def relativeret(df):
+        rel = df.pct_change()
+        cumret = (1 + rel).cumprod() - 1
+        cumret = cumret.fillna(0)
+        return cumret
+    if len(dropdown_stocks) > 0:
+        df = relativeret(yf.download(dropdown_stocks, start, end)['Adj Close'])
+        st.header('Cumulative returns of {}'.format(dropdown_stocks))
+        st.line_chart(df)
+    st.slider('How many years of investment projections?', min_value= 10, max_value= 30, value=10, step= 10)  
     
-#    price_series = []
+    # simulation of return of the stock with dividends added
     
-#    for y in range(number_days):
-#        if count == 1400:
-#            break
-#            price = price_series[count] * (1 + np.random.normal(0, daily_volatility))
-#            price_series.append(price)
-#            count += 1
-            
-#        simulation_df[x]= price_series
-        
-#simulation_df.head()
+elif dropdown_option == "Crypto":
+    dropdown_crypto = st.selectbox('What crypto would you like to reinvest in?', crypto)
+    st.slider('How many years of investment projections?', min_value= 10, max_value= 30, value=10, step= 10)
     
-    #def relativeret(df):
-#    rel = df.pct_change()
-#    cumret = (1 + rel).cumprod() - 1
-#    cumret = cumret.fillna(0)
-#    return cumret
-#if len(dropdown_stocks) > 0:
-#    df = relativeret(yf.download(dropdown_stocks, start, end)['Adj Close'])
-#    st.header('Cumulative returns of {}'.format(dropdown_stocks))
-#    st.line_chart(df)
-#if len(dropdown_stocks) > 0:
-#    df3 = yf.download(dropdown_stocks, start, end)['dividendYield']['dividendRate']
-#    st.bar_chart(df3)
+    # simulation of chosen crypto using invested dividends
+     
+elif dropdown_option == "Keep the cash":
+    dropdown_div = st.multiselect('This stock will return', tickers)
+    st.slider('How many years of pocketing the cash?', min_value= 10, max_value= 30, value=10, step= 10)
     
-#share_amount= st.slider('How many shares do you want?', min_value=10, max_value=500, value=20, step=5)
+    # simulation of dividend investment over time
+    
+
