@@ -8,15 +8,13 @@ import json
 import os
 from pathlib import Path
 import requests
-from dotenv import load_dotenv
-import alpaca_trade_api as tradeapi
+
 import hvplot.pandas
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 import statistics
-
-#i commented out line 95-96 in the MCForecast file to avoid printing out lines "Running simulation number"
+#from MCForecastTools_2Mod import MCSimulation
 
 # title of the project and introduction on what to do 
 
@@ -60,7 +58,7 @@ if len(dropdown_stocks) > 0:
     st.line_chart(df)
     
     # Showing what is the yearly dividend % for the chosen stock
-    st.text(f'The average yearly dividend {dropdown_stocks} is:')
+    st.text(f'The average yearly dividend for {dropdown_stocks} is:')
  
     tickerData = yf.Ticker(dropdown_stocks) # Get ticker data
     tickerDf = tickerData.history(period='1d', start=start, end=end) #get the historical prices for this ticker
@@ -80,7 +78,6 @@ def amount(share_amount):
     value = close_price(dropdown_stocks) * share_amount
     price = value
     return round(value,2)
-
 st.info('Your initial investment is ${}'.format(amount(share_amount)))
 
 # Showing amount of yearly dividend in $  
@@ -89,66 +86,9 @@ st.text('Your current yearly dividend for the amount of shares you selected is:'
 # Calculate the yearly $ after getting the value from yahoo finance    
 string_summary2 = tickerData.info['dividendRate']
 yearly_div_amount = (string_summary2 * 4) * (share_amount)
-
-
-
-#Predict stock using series of Monte Carlo simulation. Only works with one stock at a time.
-def mc_stock_price(years, simulations):
-#     historic_end = pd.to_datetime("today")
-#     historic_start = historic_end - np.timedelta64(4,"Y")
-    for i in dropdown_stocks:
-    #calling historic data
-
-    stock_hist =  stock.history(start = historic_start, end = historic_end)
-    
-    #data-cleaning
-    stock_hist.drop(columns = ["Dividends","Stock Splits"], inplace = True)
-    stock_hist.rename(columns = {"Close":"close"}, inplace = True)
-    stock_hist = pd.concat({i: stock_hist}, axis = 1)
-    
-    #defining variables ahead of time in preparation for MC Simulation series
-    Upper_Yields = []
-    Lower_Yields = []
-    Means = []
-    currentYear = datetime.datetime.now().year
-    Years = [currentYear]
-    
-    #beginning Simulation series and populating with outputs
-    
-    #for x in range(number of years)
-    for x in range(years):
-        MC_looped = MCSimulation(portfolio_data = stock_hist, 
-                                      num_simulation= simulations,
-                                      num_trading_days= 252*x+1)
-        MC_summary_stats = MC_looped.summarize_cumulative_return()
-        Upper_Yields.append(MC_summary_stats["95% CI Upper"])
-        Lower_Yields.append(MC_summary_stats["95% CI Lower"])
-        Means.append(MC_summary_stats["mean"])
-        Years.append(currentYear+(x+1))
-    
-    potential_upper_price = [element * stock_hist[i]["close"][-1] for element in Upper_Yields]
-    potential_lower_price = [element * stock_hist[i]["close"][-1] for element in Lower_Yields]
-    potential_mean_price = [element * stock_hist[i]["close"][-1] for element in Means]
-    
-    print(i, potential_lower_price)
-    
-    plt.figure(figsize= (20,10))
-    plt.title(i + " Forecast Price")
-    plt.xlabel = "Years Forecasted"
-    plt.ylabel = "Price"
-    plt.xticks(ticks = list(range(4)), labels = Years)
-    plt.plot(potential_lower_price, linestyle = ":", color = "r", label = "95% Lower CI")
-    plt.plot(potential_upper_price, linestyle = ":", color = "b", label = "95% Upper CI")
-    plt.plot(potential_mean_price, color = "g", label = "Mean")
-    plt.legend(loc="upper left")
-    plt.show()
-    
-        
-    
-
+st.info(f'${yearly_div_amount}')        
 
 # This is where the user make the choice of where to reinvest the dividend paid. 
-
 dropdown_option = st.selectbox('Where do you want to reinvest your dividends?', options)
 
 # Create and empty DataFrame for closing prices of chosen stock
@@ -157,8 +97,10 @@ df_stock_prices = pd.DataFrame()
 # Fetch the closing prices for all the stocks
 df_stock_prices[dropdown_option] = close_price(dropdown_stocks)
 
+
 # Calculating the cumulative returns after choosing the same stock option
 if dropdown_option == "Same Stock":
+    @st.cache
     def relativeret(df):
         rel = df.pct_change()
         cumret = (1 + rel).cumprod() - 1
@@ -186,7 +128,7 @@ if dropdown_option == "Same Stock":
 
     
     # simulation of return of the stock with dividends to be added here 
-
+    
     
     # Calculating the projected return for crypto opyion chosen here
 elif dropdown_option == "Crypto":
@@ -205,7 +147,7 @@ elif dropdown_option == "Crypto":
     
     
     # simulation of chosen crypto using invested dividends to be added here
-     
+    
 # Calculating the projected return for reinvestment into the same stock chosen here
 elif dropdown_option == "Keep the cash":
     
@@ -213,11 +155,12 @@ elif dropdown_option == "Keep the cash":
     year_opt3 = st.slider('How many years of pocketing the cash?', min_value= 10, max_value= 30, value=10, step= 10)
     st.write(f'You will reinvest your dividends for {year_opt3} years')
     
+
+       
     st.header(f'The projected return for {dropdown_stocks} is', tickers)
     
     investment = yearly_div_amount / 12
     interest = 5
-    
     # simulation of dividend investment over time. 
     # simple dividend reinvestment function
     @st.cache
@@ -235,7 +178,11 @@ elif dropdown_option == "Keep the cash":
     SIP_maturity = sip(investment, year_opt3, interest)
     
     st.subheader(f'Your total dividend return will be {SIP_maturity}')
-   
-    # we should have a projection of the stock over the next chosen period as well to show the user wher they will be
-     
+              
+   # we should have a projection of the stock over the next chosen period as well to show the user wher they will be
 
+    s1 = st.slider("slider 1", min_value=0, max_value=10, value=3)
+    s2 = st.slider("slider 2", min_value=1, max_value=10, value=1)
+
+    st.write(f's1 + s2 = {s1 + s2}')
+    st.write(f's1 * s2 = {s1 * s2}')
