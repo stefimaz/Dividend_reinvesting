@@ -16,10 +16,10 @@ import statistics
 
 
 st.title('Dividends Reinvestment Dashboard')
-st.text('Analysis of the Power of Dividend Reinvestment.')
-st.text('Select from the list of stocks that pays dividends.')
-st.text('You will then be able to select between three options.')
-st.text('Choose wisely.')
+st.write('Analysis of the **Power** of **Dividend Reinvestment**.')
+st.write('Select from the list of stocks that pays dividends.')
+st.write('You will then be able to select between three options.')
+st.write('***Choose wisely***.')
 
 tickers = ("AAPL","F","JPM","LUMN","MO","MSFT","T")
 crypto = ("BTC-USD", "ETH-USD")
@@ -40,10 +40,17 @@ if len(dropdown_stocks) > 0:
     st.header('Historical value of {}'.format(dropdown_stocks))
     st.text('The current value is ${}'.format(close_price(dropdown_stocks)))
     st.line_chart(df)
+    st.text('Dividends paid during the most recent four quarters...')
+    
+    def ticker_fn(Amount: float):
+        return Amount
 
     col_list = ['Amount']
+
     ticker_fn = "Resources/"+dropdown_stocks+"_dividends.csv"
     ticker_div=pd.read_csv(ticker_fn, usecols=col_list)
+    #ticker_fn.loc['Amount'] = ticker_fn.loc['Amount'].astype('float')
+
     st.text(ticker_div.head(4))
     
     
@@ -61,7 +68,7 @@ def amount(share_amount):
     return round(value,2)
 st.text('Your total investment will be {}'.format(amount(share_amount)))
 st.text(latest_div)
-st.text('You will receive {} in dividends on a quarterly basis'.format(latest_div(share_amount)))
+st.text('You will receive {} in dividends on a quarterly basis'.format(latest_div))
 
 dropdown_option = st.selectbox('Where do you want to reinvest your dividends?', options)
 # Create and empty DataFrame for closing prices of chosen stock
@@ -102,7 +109,7 @@ elif dropdown_option == "Keep the cash":
     
     
     
-    def sip(investment, tenure, interest, amount=0, is_year=True, is_percent=True, show_amount_list=False):
+    def dip(investment, tenure, interest, amount=0, is_year=True, is_percent=True, show_amount_list=False):
         tenure = tenure*12 if is_year else tenure
         interest = interest/100 if is_percent else interest
         interest /= 12
