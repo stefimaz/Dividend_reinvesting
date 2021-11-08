@@ -77,6 +77,7 @@ def amount(share_amount):
     value = close_price(dropdown_stocks) * share_amount
     price = value
     return round(value,2)
+<<<<<<< HEAD
 st.info('Your initial investment is ${}'.format(amount(share_amount)))
 
 # Showing amount of yearly dividend in $  
@@ -89,6 +90,9 @@ st.info(yearly_div_amount)
 
 
 # This is where the user make the choice of where to reinvest the dividend paid. 
+=======
+
+>>>>>>> de2556aa32f3c1dce88afa43c0b6fd26e66c2572
 dropdown_option = st.selectbox('Where do you want to reinvest your dividends?', options)
 
 # Create and empty DataFrame for closing prices of chosen stock
