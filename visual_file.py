@@ -51,7 +51,7 @@ def amount(share_amount):
     value = close_price(dropdown_stocks) * share_amount
     price = value
     return round(value,2)
-st.text('Your total buyin will be {}'.format(amount(share_amount)))
+st.text('Your initial investment is ${}'.format(amount(share_amount)))
  
 dropdown_option = st.selectbox('Where do you want to reinvest your dividends?', options)
 # Create and empty DataFrame for closing prices of chosen stock
