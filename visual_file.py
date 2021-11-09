@@ -15,7 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 import statistics
-from MCForecastTools_2Mod import MCSimulation
+
 #i commented out line 95-96 in the MCForecast file to avoid printing out lines "Running simulation number"
 
 # title of the project and introduction on what to do 
@@ -89,7 +89,7 @@ st.text('Your current yearly dividend for the amount of shares you selected is:'
 # Calculate the yearly $ after getting the value from yahoo finance    
 string_summary2 = tickerData.info['dividendRate']
 yearly_div_amount = (string_summary2 * 4) * (share_amount)
-st.info(f'${yearly_div_amount}') 
+
 
 
 #Predict stock using series of Monte Carlo simulation. Only works with one stock at a time.
@@ -98,7 +98,7 @@ def mc_stock_price(years, simulations):
 #     historic_start = historic_end - np.timedelta64(4,"Y")
     for i in dropdown_stocks:
     #calling historic data
-        stock = yf.Ticker(i)
+
     stock_hist =  stock.history(start = historic_start, end = historic_end)
     
     #data-cleaning
@@ -186,7 +186,7 @@ if dropdown_option == "Same Stock":
 
     
     # simulation of return of the stock with dividends to be added here 
-    simulation_opt1 = st.slider("How many simulations would you like to run?", min_value = 100, max_value = 1000, value = 100, step = 100)
+
     
     # Calculating the projected return for crypto opyion chosen here
 elif dropdown_option == "Crypto":
