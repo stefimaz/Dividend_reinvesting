@@ -16,12 +16,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 import statistics
-
+# <<<<<<< HEAD
 from MCForecastTools_2Mod import MCSimulation
 import plotly.express as px
+# =======
 
-
-
+# >>>>>>> 50726bb8d1e51840d9281af5bd15dba38b26dfb8
 #i commented out line 95-96 in the MCForecast file to avoid printing out lines "Running simulation number"
 
 # title of the project and introduction on what to do 
@@ -86,7 +86,11 @@ def amount(share_amount):
     value = close_price(dropdown_stocks) * share_amount
     price = value
     return round(value,2)
+# <<<<<<< HEAD
+# # <<<<<<< HEAD
+# =======
 
+# >>>>>>> 50726bb8d1e51840d9281af5bd15dba38b26dfb8
 st.info('Your initial investment is ${}'.format(amount(share_amount)))
 
 # Showing amount of yearly dividend in $  
@@ -103,14 +107,13 @@ def mc_stock_price(years):
 #     historic_end = pd.to_datetime("today")
 #     historic_start = historic_end - np.timedelta64(4,"Y")
     #calling historic data
-
+# <<<<<<< HEAD
     stock = yf.Ticker(dropdown_stocks)
     stock_hist =  stock.history(start = start, end = end)
+# =======
+  
 
-
-    stock_hist =  stock.history(start = historic_start, end = historic_end)
-    
-
+# >>>>>>> 50726bb8d1e51840d9281af5bd15dba38b26dfb8
     #data-cleaning
     stock_hist.drop(columns = ["Dividends","Stock Splits"], inplace = True)
     stock_hist.rename(columns = {"Close":"close"}, inplace = True)
@@ -168,13 +171,13 @@ def mc_stock_price(years):
 
 
 # This is where the user make the choice of where to reinvest the dividend paid. 
+# <<<<<<< HEAD
+# # =======
 
+# # >>>>>>> de2556aa32f3c1dce88afa43c0b6fd26e66c2572
+# =======
 
-
-
-
-
-
+# >>>>>>> 50726bb8d1e51840d9281af5bd15dba38b26dfb8
 dropdown_option = st.selectbox('Where do you want to reinvest your dividends?', options)
 
 # Create and empty DataFrame for closing prices of chosen stock
@@ -199,7 +202,7 @@ if dropdown_option == "Same Stock":
      
     # Calculate the annual average return data for the stocks
     # Use 252 as the number of trading days in the year    
-
+# <<<<<<< HEAD
     # Still working on this one but feel free to make it work  :) 
     def average_annual():
         rel = df.pct_change()
@@ -208,7 +211,7 @@ if dropdown_option == "Same Stock":
         return anual_ret
     
     st.subheader(f'Average yearly returns of {dropdown_stocks} is {average_annual(): .2f}%')
-
+# =======
     daily = yf.download(dropdown_stocks, start, end)['Adj Close']
     def average_annual (daily):
         rel = daily.pct_change()
@@ -216,7 +219,7 @@ if dropdown_option == "Same Stock":
         anual_ret = (ave_rel * 252) * 100
         return anual_ret
     st.subheader(f'Average yearly returns of {dropdown_stocks} is {average_annual(daily): .2f}%')
-
+# >>>>>>> 50726bb8d1e51840d9281af5bd15dba38b26dfb8
     
     # Slider 1 with option to select the amount of year to reinvest(10, 20 or 30)
     year_opt1 = st.slider('How many years of investment projections?', min_value= 1, max_value= 30, value=1, step= 1) 
@@ -224,9 +227,10 @@ if dropdown_option == "Same Stock":
     mc_stock_price(year_opt1)
     st.header('This is the simulated price of the stocks you have chose.')
     
-
-    # simulation of return of the stock with dividends to be added here 
-
+# <<<<<<< HEAD
+# =======
+#     # simulation of return of the stock with dividends to be added here 
+# >>>>>>> 50726bb8d1e51840d9281af5bd15dba38b26dfb8
 
     
     # Calculating the projected return for crypto opyion chosen here
