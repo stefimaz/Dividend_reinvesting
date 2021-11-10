@@ -15,7 +15,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 import statistics
-from MCForecastTools_2Mod.py import MCsimulation
+from MCForecastTools_2Mod import MCSimulation
+import plotly.express as px
 #i commented out line 95-96 in the MCForecast file to avoid printing out lines "Running simulation number"
 
 # title of the project and introduction on what to do 
@@ -79,7 +80,7 @@ def amount(share_amount):
     value = close_price(dropdown_stocks) * share_amount
     price = value
     return round(value,2)
-<<<<<<< HEAD
+# <<<<<<< HEAD
 st.info('Your initial investment is ${}'.format(amount(share_amount)))
 
 # Showing amount of yearly dividend in $  
@@ -92,64 +93,72 @@ st.info(yearly_div_amount)
 
 
 #Predict stock using series of Monte Carlo simulation. Only works with one stock at a time.
-def mc_stock_price(years, simulations):
+def mc_stock_price(years):
 #     historic_end = pd.to_datetime("today")
 #     historic_start = historic_end - np.timedelta64(4,"Y")
-    for i in dropdown_stocks:
     #calling historic data
-    stock = yf.Ticker(i)
-    stock_hist =  stock.history(start = historic_start, end = historic_end)
-    
+    stock = yf.Ticker(dropdown_stocks)
+    stock_hist =  stock.history(start = start, end = end)
     #data-cleaning
     stock_hist.drop(columns = ["Dividends","Stock Splits"], inplace = True)
     stock_hist.rename(columns = {"Close":"close"}, inplace = True)
-    stock_hist = pd.concat({i: stock_hist}, axis = 1)
+    stock_hist = pd.concat({dropdown_stocks: stock_hist}, axis = 1)
     
-    #defining variables ahead of time in preparation for MC Simulation series
+        #defining variables ahead of time in preparation for MC Simulation series
     Upper_Yields = []
     Lower_Yields = []
     Means = []
     currentYear = datetime.datetime.now().year
     Years = [currentYear]
+    iteration = []
     
-    #beginning Simulation series and populating with outputs
+    for i in range(years+1):
+        iteration.append(i)
+        
+        
+        #beginning Simulation series and populating with outputs
     
-    #for x in range(number of years)
+        #for x in range(number of years)
     for x in range(years):
         MC_looped = MCSimulation(portfolio_data = stock_hist, 
-                                      num_simulation= simulations,
-                                      num_trading_days= 252*x+1)
+                                        num_simulation= 100,
+                                        num_trading_days= 252*x+1)
         MC_summary_stats = MC_looped.summarize_cumulative_return()
         Upper_Yields.append(MC_summary_stats["95% CI Upper"])
         Lower_Yields.append(MC_summary_stats["95% CI Lower"])
         Means.append(MC_summary_stats["mean"])
         Years.append(currentYear+(x+1))
     
-    potential_upper_price = [element * stock_hist[i]["close"][-1] for element in Upper_Yields]
-    potential_lower_price = [element * stock_hist[i]["close"][-1] for element in Lower_Yields]
-    potential_mean_price = [element * stock_hist[i]["close"][-1] for element in Means]
     
-    print(i, potential_lower_price)
+    potential_upper_price = [element * stock_hist[dropdown_stocks]["close"][-1] for element in Upper_Yields]
+    potential_lower_price = [element * stock_hist[dropdown_stocks]["close"][-1] for element in Lower_Yields]
+    potential_mean_price = [element * stock_hist[dropdown_stocks]["close"][-1] for element in Means]
     
-    plt.figure(figsize= (20,10))
-    plt.title(i + " Forecast Price")
-    plt.xlabel = "Years Forecasted"
-    plt.ylabel = "Price"
-    plt.xticks(ticks = list(range(4)), labels = Years)
-    plt.plot(potential_lower_price, linestyle = ":", color = "r", label = "95% Lower CI")
-    plt.plot(potential_upper_price, linestyle = ":", color = "b", label = "95% Upper CI")
-    plt.plot(potential_mean_price, color = "g", label = "Mean")
-    plt.legend(loc="upper left")
-    plt.show()
+#     st.line_chart(potential_lower_price)
+#     st.line_chart(potential_upper_price)
+#     st.line_chart(potential_mean_price)
+    prices_df = pd.DataFrame(columns = ["potential_lower_price", "potential_upper_price", "potential_mean_price"])
+    prices_df["potential_lower_price"] = potential_lower_price
+    prices_df["potential_mean_price"] = potential_mean_price
+    prices_df["potential_upper_price"] = potential_upper_price
+
+    fig = px.line(prices_df)
+    fig.update_layout(
+        xaxis = dict(
+            tickmode = 'array',
+            tickvals = iteration,
+            ticktext = Years
+        )
+    )
     
-        
-    
+    st.write(fig)
+
 
 
 # This is where the user make the choice of where to reinvest the dividend paid. 
-=======
+# =======
 
->>>>>>> de2556aa32f3c1dce88afa43c0b6fd26e66c2572
+# >>>>>>> de2556aa32f3c1dce88afa43c0b6fd26e66c2572
 dropdown_option = st.selectbox('Where do you want to reinvest your dividends?', options)
 
 # Create and empty DataFrame for closing prices of chosen stock
@@ -175,19 +184,21 @@ if dropdown_option == "Same Stock":
     # Calculate the annual average return data for the stocks
     # Use 252 as the number of trading days in the year    
     # Still working on this one but feel free to make it work  :) 
-    def average_annual ():
-        rel = df2.pcs_change()
+    def average_annual():
+        rel = df.pct_change()
         ave_rel= rel.mean()
         anual_ret = (ave_rel * 252) * 100
         return anual_ret
-    st.header('Average yearly returns of {}'.format(average_annual(df2)))
+    
+    st.subheader(f'Average yearly returns of {dropdown_stocks} is {average_annual(): .2f}%')
     
     # Slider 1 with option to select the amount of year to reinvest(10, 20 or 30)
-    year_opt1 = st.slider('How many years of investment projections?', min_value= 10, max_value= 30, value=10, step= 10) 
-
+    year_opt1 = st.slider('How many years of investment projections?', min_value= 1, max_value= 30, value=1, step= 1) 
     
-    # simulation of return of the stock with dividends to be added here 
-    simulation_opt1 = st.slider("How many simulations would you like to run?", min_value = 100, max_values = 1000, valie = 100, step = 100)
+    mc_stock_price(year_opt1)
+    st.header('This is the simulated price of the stocks you have chose.')
+    
+
     
     # Calculating the projected return for crypto opyion chosen here
 elif dropdown_option == "Crypto":
