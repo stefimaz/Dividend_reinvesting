@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import streamlit as st
 import pandas as pd
 import yfinance as yf
@@ -280,7 +280,7 @@ elif dropdown_option == "Keep the cash":
     # we should have a projection of the stock over the next chosen period as well to show the user wher they will be
      
 
-=======
+
 import streamlit as st
 import pandas as pd
 import yfinance as yf
