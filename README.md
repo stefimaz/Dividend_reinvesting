@@ -12,24 +12,28 @@ As a result, we have created a new tool that allows investors to compare and con
 
 ## Technologies
 
-This project leverages python 3.7, Streamlit, Yahoo Finance and SciPy.
+This project leverages python 3.7, Streamlit, Yahoo Finance, SciPy, ARIMA and Statsmodels .
 
 Go to your terminal or git bash and run conda activate dev to activate your conda dev environment. 
 You will then install the following librarie(s) and module(s) to run in Python codes created.
     pip install streamlit
     pip install yahoo-finance
     pip install scipy
+    pip install pmdarima
+    pip install statsmodels
 
 To ensure installation was complete, run the following...
     conda list streamlit
     conda list yahoo-finance
     conda list scipy
-
+    conda list pmdarima
+    conda list statsmodels
+    
 ---
 
 ## Usage
 
-Go to the Anaconda Prompt to launch JupyterLab by typing Jupyter Lab. To use this application simply clone the repository and run the dividend_power.py in you Jupyter Lab Notebook. Open the terminal and input streamlit run dividend_power.py. Enjoy the experience!
+Go to the Anaconda Prompt to launch JupyterLab by typing Jupyter Lab. To use this application simply clone the repository and run the dividend_power.py in you Jupyter Lab Notebook. Open the terminal and input streamlit run dividend_power.py and enjoy the experience!
 
 ---
 
@@ -54,8 +58,3 @@ linkedin.com/in/john-sung-3675569
 ## License
 
 MIT
-
-
-
-
-
