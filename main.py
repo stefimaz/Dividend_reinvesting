@@ -28,7 +28,7 @@ st.write('***Choose wisely***.')
 # chosen stock and crypto tickers. choice of the 3 different options
 
 tickers = ("AAPL","F","JPM","LUMN","MO","MSFT","T")
-crypto = ("BTC-USD", "ETH-USD")
+crypto = ("BTC-USD", "ETH-USD", "BNB-USD")
 options = ("Same Stock", "Crypto", "Keep the cash")
 
 # box selection for the stock to invest in
@@ -225,15 +225,18 @@ def predict_crypto(crypto, forecast_period=0):
     
         train = btc_rolling[:int(0.8*len(btc_rolling))]
         test = btc_rolling[int(0.8*len(btc_rolling)):]
+        
+#         test_length = 
 
         model = ARIMA(train.values, order=arima_order)
         model_fit = model.fit(disp=0)
     
     
-        if ( float(0.2*len(btc_rolling)) < int(0.2*len(btc_rolling))):
-            fc, se, conf = model_fit.forecast((int(0.2*len(btc_rolling))), alpha=0.05)  # 95% conf
-        else:
-            fc, se, conf = model_fit.forecast((int(0.2*len(btc_rolling))), alpha=0.05)
+    
+#         if ( float(0.2*len(btc_rolling)) < int(0.2*len(btc_rolling))):
+        fc, se, conf = model_fit.forecast(len(test.index), alpha=0.05)  # 95% conf
+#         else:
+#             fc, se, conf = model_fit.forecast((int(0.2*len(btc_rolling))), alpha=0.05)
 
         fc_series = pd.Series(fc, index=test.index)
         lower_series = pd.Series(conf[:, 0], index=test.index)
@@ -397,11 +400,11 @@ elif dropdown_option == "Crypto":
         predict_crypto(dropdown_crypto)
     
         # Slider 2 with option to select the amount of year to reinvest(10, 20 or 30)
-    year_opt2 = st.slider('Using the same regression model, how many years of investment projections?', min_value= 0, max_value= 30, value=1, step= 1)
+    year_opt2 = st.slider('Using the same regression model, how many years of investment projections?', min_value= 0, max_value= 30, value=0, step= 5)
     crypto_forecast = predict_crypto(dropdown_crypto, year_opt2)
     st.dataframe(crypto_forecast)
     
-    crypto_gain = round((float(crypto_forecast["Forecasted Values"][-1:]) - float(crypto_forecast["Forecasted Values"][0])) / float(crypto_forecast["Forecasted Values"][0]),2)
+    crypto_gain = round( ((float(crypto_forecast["Forecasted Values"][-1:]) - float(crypto_forecast["Forecasted Values"][0])) / crypto_forecast["Forecasted Values"][0]) * 100 , 2)
     st.info(f"The percent gain from the forecasted values is {crypto_gain}%")
     st.text(f"Using the total dividend of ${yearly_div_amount}, reinvesting in cryptocurrency would\nprovide you with ${round(yearly_div_amount*crypto_gain,2)}")
     
