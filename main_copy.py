@@ -136,10 +136,10 @@ def mc_stock_price(years):
     potential_lower_price = [element * stock_hist[dropdown_stocks]["close"][-1] for element in Lower_Yields]
     potential_mean_price = [element * stock_hist[dropdown_stocks]["close"][-1] for element in Means]
 
-    prices_df = pd.DataFrame(columns = ["potential_lower_price", "potential_upper_price", "potential_mean_price"])
-    prices_df["potential_lower_price"] = potential_lower_price
-    prices_df["potential_mean_price"] = potential_mean_price
-    prices_df["potential_upper_price"] = potential_upper_price
+    prices_df = pd.DataFrame(columns = ["Lower Bound Price", "Upper Bound Price", "Forecasted Average Price"])
+    prices_df["Lower Bound Price"] = potential_lower_price
+    prices_df["Forecasted Average Price"] = potential_mean_price
+    prices_df["Upper Bound Price"] = potential_upper_price
 
     fig = px.line(prices_df)
     fig.update_layout(
@@ -151,6 +151,9 @@ def mc_stock_price(years):
     )
     
     st.write(fig)
+    
+    
+    return prices_df
 
 def cumsum_shift(s, shift = 1, init_values = [0]):
     s_cumsum = pd.Series(np.zeros(len(s)))
@@ -373,30 +376,40 @@ if dropdown_option == "Same Stock":
     # Slider 1 with option to select the amount of year to reinvest(10, 20 or 30)
     year_opt1 = st.slider('How many years of investment projections?', min_value= 10, max_value= 30, value=10, step= 10) 
     
-    mc_stock_price(year_opt1)
-    st.subheader('This is the simulated price of the stocks you chose.')
 
 
     # simulation of return of the stock with dividends to be added here 
-    same_amount_div = yearly_div_amount / 12
-    same_interest = yearly_returns
-    investment3 = initial_investment
-    @st.cache
-    def same_stock(investment, tenure, interest, amount=investment3, is_year=True, is_percent=True, show_amount_list=False):
-        tenure = tenure*12 if is_year else tenure
-        interest = interest/100 if is_percent else interest
-        interest /= 12
-        amount_every_month = {}
-        for month in range(tenure):
-            amount = (amount + investment)*(1+interest)
-            amount_every_month[month+1] = amount
-        return {f'A': amount,
-                'Amount every month': amount_every_month} if show_amount_list else round(amount, 2) 
-    # (monthly amount, years, percent returned)
-    Same_maturity = same_stock(same_amount_div, year_opt1, same_interest)
+#     same_amount_div = yearly_div_amount / 12
+#     same_interest = yearly_returns
+#     investment3 = initial_investment
+#     @st.cache
+#     def same_stock(investment, tenure, interest, amount=investment3, is_year=True, is_percent=True, show_amount_list=False):
+#         tenure = tenure*12 if is_year else tenure
+#         interest = interest/100 if is_percent else interest
+#         interest /= 12
+#         amount_every_month = {}
+#         for month in range(tenure):
+#             amount = (amount + investment)*(1+interest)
+#             amount_every_month[month+1] = amount
+#         return {f'A': amount,
+#                 'Amount every month': amount_every_month} if show_amount_list else round(amount, 2) 
+#     # (monthly amount, years, percent returned)
+#     Same_maturity = same_stock(same_amount_div, year_opt1, same_interest)
     
-    st.subheader(f'Your stock average value after {year_opt1} of reinvesting the dividends will be:')
-    st.success(f'${Same_maturity}')
+#     st.subheader(f'Your stock average value after {year_opt1} of reinvesting the dividends will be:')
+#     st.success(f'${Same_maturity}')
+    
+    mc_stock = mc_stock_price(year_opt1)
+    st.subheader('This is the simulated price of the stocks you have chose.')
+    st.dataframe(mc_stock)
+
+    zero = round(mc_stock["Forecasted Average Price"][0],2)
+    last = round(mc_stock["Forecasted Average Price"][year_opt1-1],2)
+    pct_gain  =  ( ( (last- zero) / zero ) )
+
+    st.info(f"The percent gain of the simulated forecasts is {round(float(pct_gain*100), 2)}%")
+    
+    st.text(f"If you reinvest into the current stock you are invested in right now,\nan initial investment of ${yearly_div_amount} using dividends, you would \nreceive ${round(yearly_div_amount*pct_gain,2)}.")
     
 
 
