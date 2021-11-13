@@ -2,11 +2,11 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf
 import datetime
-#import json
+
 import os
 from pathlib import Path
 import requests
-#from dotenv import load_dotenv
+
 import hvplot.pandas
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,7 +29,14 @@ st.write('***Choose wisely***.')
 
 tickers = ("AAPL","F","JPM","LUMN","MO","MSFT","T","XOM")
 crypto = ("BTC-USD", "ETH-USD", "BNB-USD")
-options = ("Same Stock", "Crypto", "Keep the cash")
+options = ("Keep the cash", "Same Stock", "Crypto")
+
+#dropdown_crypto = st.selectbox('',crypto)    
+#crypto_forecast = predict_crypto(dropdown_crypto, year_opt2)    
+#crypto_gain = round( ((float(crypto_forecast["Forecasted Values"][-1:]) - float(crypto_forecast["Forecasted Values"][0])) / crypto_forecast["Forecasted Values"][0]) * 100 , 2)    
+#crypto_future = {round(yearly_div_amount*crypto_gain,2)}      
+#SIP_stock_maturity = 0.0
+#SIP_maturity = 0.0
 
 # box selection for the stock to invest in
 dropdown_stocks = st.selectbox('Pick your stock', tickers)
@@ -61,7 +68,7 @@ if len(dropdown_stocks) > 0:
     st.line_chart(df)
     
     # Showing what is the yearly dividend % for the chosen stock
-    st.text(f'The average yearly dividend {dropdown_stocks} is:')
+    st.text(f'The average yearly yield {dropdown_stocks} is:')
  
     tickerData = yf.Ticker(dropdown_stocks) # Get ticker data
     tickerDf = tickerData.history(period='1d', start=start, end=end) #get the historical prices for this ticker
@@ -345,8 +352,74 @@ df_stock_prices = pd.DataFrame()
 # Fetch the closing prices for all the stocks
 df_stock_prices[dropdown_option] = close_price(dropdown_stocks)
 
-# Calculating the cumulative returns after choosing the same stock option
-if dropdown_option == "Same Stock":
+
+# Calculating the projected return for reinvestment into the same stock chosen here
+
+if dropdown_option == "Keep the cash":
+    
+    # Slider 3 with option to select the amount of year to reinvest(10, 20 or 30)
+    year_opt3 = st.slider('How many years of pocketing the cash?', min_value= 10, max_value= 30, value=10, step= 10)
+    st.write(f'You will reinvest your dividends for {year_opt3} years')
+    
+    daily = yf.download(dropdown_stocks, start, end)['Adj Close']
+    def average_annual (daily):
+        rel = daily.pct_change()
+        ave_rel= rel.mean()
+        anual_ret = (ave_rel * 252) * 100
+        return anual_ret
+    st.subheader(f'Average yearly returns of {dropdown_stocks} is {average_annual(daily): .2f}%')
+    
+    yearly_returns = average_annual(daily)
+    investment1 = initial_investment
+    interest1 =  yearly_returns
+    
+    def sip_stock(investment, tenure, interest, amount= investment1, is_year=True, is_percent=True, show_amount_list=False):
+        tenure = tenure*12 if is_year else tenure
+        interest = interest/100 if is_percent else interest
+        interest /= 12
+        amount_every_month = {}
+        for month in range(tenure):
+            amount = (amount + investment)*(1+interest)
+            amount_every_month[month+1] = amount
+        return {f'A': amount,
+                'Amount every month': amount_every_month} if show_amount_list else round(amount, 2) 
+    # (monthly amount, years, percent returned)
+    
+    SIP_stock_maturity = sip_stock(0, year_opt3, interest1)
+    
+    
+    
+    st.subheader(f'The projected return for {dropdown_stocks} is:')
+    st.success(f'${SIP_stock_maturity}')
+    
+#    st.subheader(f'Your total dividend return will be {SIP_maturity}')        
+
+    investment = yearly_div_amount / 12
+    interest = 0
+    # simulation of dividend investment over time. 
+    # simple dividend reinvestment function
+    @st.cache
+    def sip(investment, tenure, interest, amount=0, is_year=True, is_percent=True, show_amount_list=False):
+        tenure = tenure*12 if is_year else tenure
+        interest = interest/100 if is_percent else interest
+        interest /= 12
+        amount_every_month = {}
+        for month in range(tenure):
+            amount = (amount + investment)*(1+interest)
+            amount_every_month[month+1] = amount
+        return {f'A': amount,
+                'Amount every month': amount_every_month} if show_amount_list else round(amount, 2) 
+    # (monthly amount, years, percent returned)
+    
+    SIP_maturity = sip(investment, year_opt3, interest)
+    
+    st.subheader(f'Your total dividend return will be')
+    st.success(f'${SIP_maturity}')
+    
+
+    
+    # Calculating the projected return for crypto opyion chosen here
+elif dropdown_option == "Same Stock":
     @st.cache
     def relativeret(df):
         rel = df.pct_change()
@@ -392,7 +465,7 @@ if dropdown_option == "Same Stock":
     st.text(f"With your dividend of ${yearly_div_amount} reinvested every years, you would receive.")
     st.success(f'${round(yearly_div_amount*pct_gain,2)}')
     
-    # Calculating the projected return for crypto opyion chosen here
+    # Calculating the cumulative returns after choosing the same stock option
 elif dropdown_option == "Crypto":
     
     # selection of the crypto to reinvest in
@@ -418,75 +491,9 @@ elif dropdown_option == "Crypto":
     st.info(f"The percent gain from the forecasted values is {crypto_gain}%")
     st.text(f"Using the total yearly dividend of ${yearly_div_amount} reinvested in {dropdown_crypto} could get you:") 
     st.success(f"Future value of ${round(yearly_div_amount*crypto_gain,2)}")
-    
-    
-   
+       
      
-# Calculating the projected return for reinvestment into the same stock chosen here
-elif dropdown_option == "Keep the cash":
-    
-    # Slider 3 with option to select the amount of year to reinvest(10, 20 or 30)
-    year_opt3 = st.slider('How many years of pocketing the cash?', min_value= 10, max_value= 30, value=10, step= 10)
-    st.write(f'You will reinvest your dividends for {year_opt3} years')
-    
-    daily = yf.download(dropdown_stocks, start, end)['Adj Close']
-    def average_annual (daily):
-        rel = daily.pct_change()
-        ave_rel= rel.mean()
-        anual_ret = (ave_rel * 252) * 100
-        return anual_ret
-    st.subheader(f'Average yearly returns of {dropdown_stocks} is {average_annual(daily): .2f}%')
-    
-    yearly_returns = average_annual(daily)
-    investment1 = initial_investment
-    interest1 =  yearly_returns
-    
-    def sip_stock(investment, tenure, interest, amount= investment1, is_year=True, is_percent=True, show_amount_list=False):
-        tenure = tenure*12 if is_year else tenure
-        interest = interest/100 if is_percent else interest
-        interest /= 12
-        amount_every_month = {}
-        for month in range(tenure):
-            amount = (amount + investment)*(1+interest)
-            amount_every_month[month+1] = amount
-        return {f'A': amount,
-                'Amount every month': amount_every_month} if show_amount_list else round(amount, 2) 
-    # (monthly amount, years, percent returned)
-    SIP_stock_maturity = sip_stock(0, year_opt3, interest1)
-    
-    
-    
-    st.subheader(f'The projected return for {dropdown_stocks} is:')
-    st.success(f'${SIP_stock_maturity}')
-    
-#    st.subheader(f'Your total dividend return will be {SIP_maturity}')        
-
-    investment = yearly_div_amount / 12
-    interest = 0
-    # simulation of dividend investment over time. 
-    # simple dividend reinvestment function
-    @st.cache
-    def sip(investment, tenure, interest, amount=0, is_year=True, is_percent=True, show_amount_list=False):
-        tenure = tenure*12 if is_year else tenure
-        interest = interest/100 if is_percent else interest
-        interest /= 12
-        amount_every_month = {}
-        for month in range(tenure):
-            amount = (amount + investment)*(1+interest)
-            amount_every_month[month+1] = amount
-        return {f'A': amount,
-                'Amount every month': amount_every_month} if show_amount_list else round(amount, 2) 
-    # (monthly amount, years, percent returned)
-    SIP_maturity = sip(investment, year_opt3, interest)
-    
-    st.subheader(f'Your total dividend return will be')
-    st.success(f'${SIP_maturity}')
-    
-    
-    
-    
-    
-    
+   
     
 #dropdown_crypto = st.selectbox('',crypto)    
 #crypto_forecast = predict_crypto(dropdown_crypto, year_opt2)    
@@ -494,19 +501,28 @@ elif dropdown_option == "Keep the cash":
 #crypto_future = {round(yearly_div_amount*crypto_gain,2)}      
 #future_stocks = SIP_stock_maturity
 #future_div = SIP_maturity
+
+
+#def summary(dropdown_option):
+#    senarios = ["a","b","c"]
+#    for senario in senarios:
+                
     
+
 #with st.expander("See Summary of the different options"):
 #    st.subheader("This shows yo uthe diffence of the 3 different options to reinvest in:")
 #    col1, col2, col3 = st.columns(3)
-#    with col1:
-#        st.info("Same Stock")
+ #   with col1:
+ #       st.info("Keep the Cash")
+ #       st.success(f'Stock value:${SIP_stock_maturity}')
+ #       st.success(f'Dividends value:${SIP_maturity}')
+ #       
+ #   with col2:
+ #       st.info("Same Stock")
 #        st.success(f'')
         
-#    with col2:
-#        st.info("Crypto")
-#        st.success(f"Future value ${crypto_future}")
-        
 #    with col3:
-#        st.info("Keep the Cash")
-#        st.success(f'Stock value:${SIP_stock_maturity}')
-#        st.success(f'Dividends value:${SIP_maturity}')
+ #       st.info("Crypto")
+ #       st.success(f"Future value ${round(yearly_div_amount*crypto_gain,2)}")
+        
+        
