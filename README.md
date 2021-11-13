@@ -12,33 +12,42 @@ As a result, we have created a new tool that allows investors to compare and con
 
 ## Technologies
 
-This project leverages python 3.7, Streamlit, Yahoo Finance and SciPy.
+This project leverages python 3.7, Streamlit, Yahoo Finance, SciPy, ARIMA and Statsmodels .
 
 Go to your terminal or git bash and run conda activate dev to activate your conda dev environment. 
 You will then install the following librarie(s) and module(s) to run in Python codes created.
     pip install streamlit
     pip install yahoo-finance
     pip install scipy
+    pip install pmdarima
+    pip install statsmodels
 
 To ensure installation was complete, run the following...
     conda list streamlit
     conda list yahoo-finance
     conda list scipy
-
+    conda list pmdarima
+    conda list statsmodels
+    
 ---
 
 ## Usage
 
-Go to the Anaconda Prompt to launch JupyterLab by typing Jupyter Lab. To use this application simply clone the repository and run the dividend_power.py in you Jupyter Lab Notebook. Open the terminal and input streamlit run dividend_power.py. Enjoy the experience!
+Go to the Anaconda Prompt to launch JupyterLab by typing Jupyter Lab. To use this application simply clone the repository and run the dividend_power.py in you Jupyter Lab Notebook. Open the terminal and input streamlit run dividend_power.py and enjoy the experience!
 
 ---
 
 
 ## Visualization
-![power_dividend](project_images/power_dividend.png)
-![div_calculations](project_images/div_calculations.png)
+
+![pick_stock](project_images/pick_stock.png)
 ![historical_value](project_images/historical_value.png)
-![projections](project_images/projections.png)
+![num_shares_and_reinvest_crypto](project_images/num_shares_and_reinvest_crypto.png)
+![stock_upper_lower_graph](project_images/stock_upper_lower_graph.png)
+![10_yr_project_crypto](project_images/10_yr_project_crypto.png)
+![kepp_the_cash](project_images/keep_the_cash.png)
+![stock_reinvestment_10_yr](project_images/stock_reinvestment_10_yr.png)
+![10_yr_forecast_crypto](project_images/10_yr_forecast_crypto.png)
 
 ---
 
@@ -54,8 +63,3 @@ linkedin.com/in/john-sung-3675569
 ## License
 
 MIT
-
-
-
-
-
