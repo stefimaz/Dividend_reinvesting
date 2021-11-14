@@ -484,7 +484,7 @@ elif dropdown_option == "Same Stock":
     yearly_returns = average_annual(stock)
     
     
-    st.subheader(f'Average yearly returns of {dropdown_stocks} is {average_annual(daily): .2f}%')
+    st.subheader(f'Average yearly returns of {dropdown_stocks} is {average_annual(stock): .2f}%')
     
     
     
@@ -522,8 +522,9 @@ elif dropdown_option == "Same Stock":
     st.info(f"The percent gain of the simulated forecasts is {round(float(pct_gain*100), 2)}%")
     
     st.subheader(f'Your stock average value after {year_opt1} years of reinvesting the dividends will be:')
+    st.success(f'${Same_maturity}')
     
-    st.text(f"With your dividend of ${yearly_div_amount} reinvested every years, you would receive.")
+    st.text(f"Your reinvested dividend of ${yearly_div_amount} every years, would be worth:")
     st.success(f'${round(yearly_div_amount*pct_gain,2)}')
     
     
