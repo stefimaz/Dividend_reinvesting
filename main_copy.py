@@ -14,6 +14,7 @@ from MCForecastTools_2Mod import MCSimulation
 import plotly.express as px
 from statsmodels.tsa.arima_model import ARIMA
 import pmdarima as pm
+from sklearn.linear_model import LinearRegression
 
 #i commented out line 95-96 in the MCForecast file to avoid printing out lines "Running simulation number"
 
@@ -37,6 +38,7 @@ dropdown_stocks = st.selectbox('Pick your stock', tickers)
 # starting date of the stock history. This is interactive and can be changed by the user
 start = st.date_input('Start Date', value= pd.to_datetime('2011-01-01'))
 end = st.date_input('End Date', value= pd.to_datetime('today'))
+currentYear = datetime.datetime.now().year
 
 # option to have a fix time period for historical data
 # start= pd.to_datetime('2011-01-01')
@@ -60,11 +62,12 @@ if len(dropdown_stocks) > 0:
     st.info('The current value is ${}'.format(close_price(dropdown_stocks)))
     st.line_chart(df)
     
+    df_history = tickerData.history(start = start, end = end)
+    
+    st.dataframe(df_history)
+    
     # Showing what is the yearly dividend % for the chosen stock
     st.text(f'The average yearly dividend {dropdown_stocks} is:')
- 
-    tickerData = yf.Ticker(dropdown_stocks) # Get ticker data
-    tickerDf = tickerData.history(period='1d', start=start, end=end) #get the historical prices for this ticker
     
     # Calculate the yearly % after getting the value from yahoo finance
     string_summary = tickerData.info['dividendYield']
@@ -82,6 +85,58 @@ def amount(share_amount):
     price = value
     return round(value,2)
 
+def regression(stock_df, forecast_years):
+    
+    stock = yf.Ticker(dropdown_stocks)
+    stock_df =  stock.history(start = start, end = end)
+    stock_df["Time"] = stock_df.index
+    stock_df["Time"] = stock_df["Time"].dt.year
+    
+    
+    dividends = stock_df.loc[stock_df["Dividends"] > 0]
+    dividends = dividends.drop(columns = ["Open", "High", "Low", "Close", "Volume", "Stock Splits"])
+    dividends = dividends.groupby(["Time"]).sum()
+    dividends["Years"] = dividends.index
+    
+    index_col = []
+    for i in range(len(dividends.index)):
+        index_col.append(i)
+    dividends["Count"] = index_col
+    
+    x_amount = dividends["Count"].values.reshape(-1,1)
+    y_amount = dividends["Dividends"].values.reshape(-1,1)
+    
+    amount_regression = LinearRegression().fit(x_amount,y_amount)
+    yfit_amount = amount_regression.predict(x_amount)
+    
+    amount_regression.coef_ = np.squeeze(amount_regression.coef_)
+    amount_regression.intercept_ = np.squeeze(amount_regression.intercept_)
+    
+
+    fig = px.scatter(dividends, y = "Dividends", x = "Years", trendline = "ols")
+
+    st.write(fig)
+    
+    amount_forecast = []
+    forecasted_year = []
+    for i in range(len(dividends.index) + forecast_years):
+        value = (amount_regression.coef_ * (i) + amount_regression.intercept_ )
+        amount_forecast.append(round(value,3))
+        forecasted_year.append(i+dividends["Years"].min())
+    
+    forecasted_data = pd.DataFrame(columns = ["Year", "Forecasted Rates"])
+    forecasted_data["Year"] = forecasted_year
+    forecasted_data["Forecasted Rates"] = amount_forecast
+    return forecasted_data
+    
+    
+    
+    
+    
+    
+        
+    
+    
 initial_investment = (amount(share_amount))
 st.info('Your initial investment is ${}'.format(amount(share_amount)))
 
@@ -110,7 +165,6 @@ def mc_stock_price(years):
     Upper_Yields = []
     Lower_Yields = []
     Means = []
-    currentYear = datetime.datetime.now().year
     Years = [currentYear]
     iteration = []
     
@@ -345,6 +399,9 @@ df_stock_prices = pd.DataFrame()
 # Fetch the closing prices for all the stocks
 df_stock_prices[dropdown_option] = close_price(dropdown_stocks)
 
+
+    
+
 # Calculating the cumulative returns after choosing the same stock option
 if dropdown_option == "Same Stock":
     @st.cache
@@ -362,42 +419,25 @@ if dropdown_option == "Same Stock":
      
     # Calculate the annual average return data for the stocks
     # Use 252 as the number of trading days in the year    
-    daily = yf.download(dropdown_stocks, start, end)['Adj Close'] 
+    stock = yf.download(dropdown_stocks, start, end)['Adj Close'] 
+    
     def average_annual (daily):
-        rel = daily.pct_change()
+        rel = stock.pct_change()
         ave_rel= rel.mean()
         anual_ret = (ave_rel * 252) * 100
         return anual_ret
-    yearly_returns = average_annual(daily)
+    yearly_returns = average_annual(stock)
     
-    st.subheader(f'Average yearly returns of {dropdown_stocks} is {average_annual(daily): .2f}%')
-
+    
+    st.metric(f"Average yearly returns of {dropdown_stocks} is", f"{round(average_annual(stock),2)}%")
+    
+    
     
     # Slider 1 with option to select the amount of year to reinvest(10, 20 or 30)
     year_opt1 = st.slider('How many years of investment projections?', min_value= 10, max_value= 30, value=10, step= 10) 
     
-
-
-    # simulation of return of the stock with dividends to be added here 
-#     same_amount_div = yearly_div_amount / 12
-#     same_interest = yearly_returns
-#     investment3 = initial_investment
-#     @st.cache
-#     def same_stock(investment, tenure, interest, amount=investment3, is_year=True, is_percent=True, show_amount_list=False):
-#         tenure = tenure*12 if is_year else tenure
-#         interest = interest/100 if is_percent else interest
-#         interest /= 12
-#         amount_every_month = {}
-#         for month in range(tenure):
-#             amount = (amount + investment)*(1+interest)
-#             amount_every_month[month+1] = amount
-#         return {f'A': amount,
-#                 'Amount every month': amount_every_month} if show_amount_list else round(amount, 2) 
-#     # (monthly amount, years, percent returned)
-#     Same_maturity = same_stock(same_amount_div, year_opt1, same_interest)
-    
-#     st.subheader(f'Your stock average value after {year_opt1} of reinvesting the dividends will be:')
-#     st.success(f'${Same_maturity}')
+    dividend_regression = regression(dropdown_stocks, year_opt1)
+    st.dataframe(dividend_regression)
     
     mc_stock = mc_stock_price(year_opt1)
     st.subheader('This is the simulated price of the stocks you have chose.')
@@ -406,7 +446,26 @@ if dropdown_option == "Same Stock":
     zero = round(mc_stock["Forecasted Average Price"][0],2)
     last = round(mc_stock["Forecasted Average Price"][year_opt1-1],2)
     pct_gain  =  ( ( (last- zero) / zero ) )
-
+    
+    same_amount_div = yearly_div_amount / 12
+    same_interest = yearly_returns
+    investment3 = initial_investment
+    @st.cache
+    def same_stock(investment, tenure, interest, amount=investment3, is_year=True, is_percent=True, show_amount_list=False):
+        tenure = tenure*12 if is_year else tenure
+        interest = interest/100 if is_percent else interest
+        interest /= 12
+        amount_every_month = {}
+        for month in range(tenure):
+            amount = (amount + investment)*(1+interest)
+            amount_every_month[month+1] = amount
+        return {f'A': amount,
+                'Amount every month': amount_every_month} if show_amount_list else round(amount, 2) 
+    # (monthly amount, years, percent returned)
+    Same_maturity = same_stock(same_amount_div, year_opt1, same_interest)
+    
+    st.subheader(f'Your stock projection for {year_opt1} after reinvesting the dividends will be:$ {Same_maturity}')
+        
     st.info(f"The percent gain of the simulated forecasts is {round(float(pct_gain*100), 2)}%")
     
     st.text(f"If you reinvest into the current stock you are invested in right now,\nan initial investment of ${yearly_div_amount} using dividends, you would \nreceive ${round(yearly_div_amount*pct_gain,2)}.")
@@ -415,6 +474,7 @@ if dropdown_option == "Same Stock":
 
 
 
+    
 
 
     
