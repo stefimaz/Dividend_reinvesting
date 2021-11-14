@@ -45,9 +45,15 @@ Go to the Anaconda Prompt to launch JupyterLab by typing Jupyter Lab. To use thi
 ![num_shares_and_reinvest_crypto](project_images/num_shares_and_reinvest_crypto.PNG)
 ![stock_upper_lower_graph](project_images/stock_upper_lower_graph.PNG)
 ![10_yr_project_crypto](project_images/10_yr_project_crypto.PNG)
+<<<<<<< HEAD
 ![stock_reinvestment_10_yr](project_images/stock_reinvestment_10_yr.PNG)
 ![10_yr_forecast_crypto](project_images/10_yr_forecast_crypto.PNG)
 ![kepp_the_cash](project_images/keep_the_cash.PNG)
+=======
+![kepp_the_cash](project_images/keep_the_cash.PNG)
+![stock_reinvestment_10_yr](project_images/stock_reinvestment_10_yr.PNG)
+![10_yr_forecast_crypto](project_images/10_yr_forecast_crypto.PNG)
+>>>>>>> main
 
 ---
 
