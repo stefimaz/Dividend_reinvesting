@@ -33,7 +33,7 @@ To ensure installation was complete, run the following...
 
 ## Usage
 
-Go to the Anaconda Prompt to launch JupyterLab by typing Jupyter Lab. To use this application simply clone the repository and run the dividend_power.py in you Jupyter Lab Notebook. Open the terminal and input streamlit run main.py or copy and paste https://share.streamlit.io/stefimaz/side_projects/main.py to a web browser.
+Go to the Anaconda Prompt to launch JupyterLab by typing Jupyter Lab. To use this application simply clone the repository and run the dividend_power.py in you Jupyter Lab Notebook. Open a terminal and input streamlit run main.py or click on https://share.streamlit.io/stefimaz/side_projects/main.py to experience the app.
 
 ---
 
