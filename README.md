@@ -1,4 +1,8 @@
-# Power of Dividend Reinvesting | EXECUTIVE SUMMARY
+![header](https://capsule-render.vercel.app/api?type=wave&color=auto&height=150&section=header&text=Power%20Of%20Dividand%20Reinvesting&fontSize=40&fontColor=black)
+
+<!--- the header is made with: https://github.com/kyechan99/capsule-render -->
+
+## Executive Summary
 
 Citizens of the world during this pandemic have been forced to experience a new way of life. Whether it was remote learning, excessive zoom meetings or taking PCR tests to protect the ones we love, we all had to adjust the way we think, plan and act. 
 
