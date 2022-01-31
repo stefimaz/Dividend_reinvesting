@@ -1,4 +1,4 @@
-![header](https://capsule-render.vercel.app/api?type=wave&color=auto&height=150&section=header&text=Power%20Of%20Dividand%20Reinvesting&fontSize=40&fontColor=black)
+![header](https://capsule-render.vercel.app/api?type=wave&color=auto&height=150&section=header&text=Power%20Of%20Dividend%20Reinvesting&fontSize=40&fontColor=black)
 
 <!--- the header is made with: https://github.com/kyechan99/capsule-render -->
 
