@@ -56,7 +56,7 @@ Go to the Anaconda Prompt to launch JupyterLab by typing Jupyter Lab. To use thi
 ---
 
 ## Contributors
-[Stephane Maysn](https://www.linkedin.com/in/stephane-masyn-35b16817a/) [<img src="https://cdn2.auth0.com/docs/media/connections/linkedin.png" alt="LinkedIn -  Staphane Masyn" width=15/>](https://www.linkedin.com/in/stephane-masyn-35b16817a/)
+[Stephane Maysn](https://www.linkedin.com/in/stephane-masyn) [<img src="https://cdn2.auth0.com/docs/media/connections/linkedin.png" alt="LinkedIn -  Staphane Masyn" width=15/>](https://www.linkedin.com/in/stephane-masyn)
 
 [Andy He](https://www.linkedin.com/in/andy-he-8015bb17a/) [<img src="https://cdn2.auth0.com/docs/media/connections/linkedin.png" alt="LinkedIn -  Andy He" width=15/>](https://www.linkedin.com/in/andy-he-8015bb17a/)
 
